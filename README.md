@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Financial Forecast
 
 Projet de prévision financière multi-horizon avec Transformers.
@@ -17,3 +18,6 @@ avec quantification d'incertitude.
     python scripts/compute_features.py
     python -m src.train
     python -m src.evaluate
+=======
+# Pr-vision-Financiere-Multi-Horizon-avec-Transformers
+>>>>>>> af28ceaf0f684138c5ba8022a3c8ab16b038963a
