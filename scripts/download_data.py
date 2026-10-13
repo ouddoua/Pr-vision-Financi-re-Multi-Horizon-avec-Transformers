@@ -1,16 +1,20 @@
-"""Téléchargement des données OHLCV via yfinance."""
 import yfinance as yf
 import os
+import pandas as pd
 
-def download_data(ticker="AAPL", start="2015-01-01", end="2024-01-01",
-                  save_dir="data"):
-    os.makedirs(save_dir, exist_ok=True)
-    print(f"Téléchargement de {ticker} de {start} à {end}...")
-    df = yf.download(ticker, start=start, end=end, auto_adjust=True)
-    filepath = os.path.join(save_dir, f"{ticker}.csv")
-    df.to_csv(filepath)
-    print(f"Données sauvegardées dans {filepath} ({len(df)} lignes)")
-    return df
+os.makedirs("data", exist_ok=True)
 
-if __name__ == "__main__":
-    download_data()
+app = yf.download("AAPL", start="2015-01-01")
+
+# 1) Enlever le niveau "Ticker" (AAPL)
+app.columns = app.columns.droplevel(1)
+
+# 2) Enlever le nom "Price" qui reste au-dessus
+app.columns.name = None
+
+df = pd.DataFrame(app)
+df.to_csv("data/AAPL.csv")
+
+print(df.head())
+print(df.tail())
+print(df.shape)
