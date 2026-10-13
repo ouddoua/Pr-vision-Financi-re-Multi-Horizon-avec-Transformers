@@ -1,1 +1,1 @@
-# Pr-vision-Financi-re-Multi-Horizon-avec-Transformers
+# Pr-vision-Financiere-Multi-Horizon-avec-Transformers
