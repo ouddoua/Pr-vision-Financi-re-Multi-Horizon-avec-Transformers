@@ -28,7 +28,7 @@ def split_data(data, test_size=0.2):
 
 
 if __name__ == "__main__":
-    data = load_data("AAPL.csv")
+    data = load_data("data/AAPL.csv")
     cleaned_data = clean_data(data)
     train_data, test_data = split_data(cleaned_data, test_size=0.2)
     print("Train :", train_data.shape)
