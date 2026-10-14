@@ -1,8 +1,14 @@
 import pandas as pd
+import numpy as np
 import ta
 
 # Charger les données propres (celles qu'on a sauvées après processing)
 df = pd.read_csv("data/AAPl_clean.csv", parse_dates=["Date"], index_col="Date")
+print("Shape initial :", df.shape)
+
+# Log-return
+df["log_return"] = np.log(df["Close"] / df["Close"].shift(1))
+
 
 # RSI
 df["rsi"] = ta.momentum.RSIIndicator(df["Close"], window=14).rsi()
@@ -19,11 +25,18 @@ df["bb_upper"] = bb.bollinger_hband()
 df["bb_middle"] = bb.bollinger_mavg()
 df["bb_lower"] = bb.bollinger_lband()
 
-# Log-return (on le garde, car ta ne le fait pas)
-df["log_return"] = (df["Close"] / df["Close"].shift(1)).apply(lambda x: __import__('numpy').log(x))
+df["target_1d"]  = np.log(df["Close"].shift(-1)  / df["Close"])
+df["target_5d"]  = np.log(df["Close"].shift(-5)  / df["Close"])
+df["target_20d"] = np.log(df["Close"].shift(-20) / df["Close"])
 
+print("Shape après features + targets :", df.shape)
 print(df[["Close", "rsi", "macd", "bb_upper", "log_return"]].tail())
-
 df = df.dropna()
-print(df.head())
+
+print("Après nettoyage :", df.shape)
 df.to_csv("data/AAPL_features.csv")
+
+print()
+print("Colonnes :", list(df.columns))
+print("Période  :", df.index.min().date(), "→", df.index.max().date())
+print("Sauvegardé dans data/AAPL_features.csv")
