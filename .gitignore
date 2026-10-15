@@ -12,8 +12,11 @@ __pycache__/
 # Données et résultats
 data/*.csv
 data/*.parquet
+data/*.pt
+data/*.ckpt
 results/*
 !results/.gitkeep
+lightning_logs/
 
 # IDE
 .vscode/

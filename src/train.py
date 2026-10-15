@@ -1,3 +1,7 @@
+import argparse
+import copy
+from pathlib import Path
+
 import torch
 import torch.nn as nn
 import sys
@@ -5,6 +9,10 @@ sys.path.append("src")
 
 from models import load_and_prepare, LSTMModel
 
+
+parser = argparse.ArgumentParser(description="Entraîne le LSTM multi-horizon.")
+parser.add_argument("--output", default="data/lstm_model.pt")
+args = parser.parse_args()
 
 # 1. Charger les données
 X_train, y_train, X_val, y_val, X_test, y_test = load_and_prepare()
@@ -48,7 +56,7 @@ for epoch in range(100):
     # Sauvegarder le meilleur
     if loss_val.item() < meilleur_val:
         meilleur_val = loss_val.item()
-        meilleur_etat = model.state_dict()
+        meilleur_etat = copy.deepcopy(model.state_dict())
         compteur = 0
     else:
         compteur += 1
@@ -58,6 +66,8 @@ for epoch in range(100):
 
 # 6. Recharger le meilleur modèle et sauvegarder
 model.load_state_dict(meilleur_etat)
-torch.save(model.state_dict(), "data/lstm_model.pt")
+output_path = Path(args.output)
+output_path.parent.mkdir(parents=True, exist_ok=True)
+torch.save(model.state_dict(), output_path)
 print(f"\nMeilleure val_loss : {meilleur_val:.6f}")
-print("Modèle sauvegardé.")
+print(f"Modèle sauvegardé : {output_path}")

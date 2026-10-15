@@ -1,8 +1,14 @@
 """Évaluation du TFT multi-horizon."""
 
+import argparse
 import pandas as pd
 import numpy as np
 from pytorch_forecasting import TimeSeriesDataSet, TemporalFusionTransformer
+
+
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--model", default="data/tft_multi.ckpt")
+args = parser.parse_args()
 
 
 def rmse(vrai, predit):
@@ -43,7 +49,7 @@ test_dl = testing.to_dataloader(train=False, batch_size=64)
 # ============================================================
 # 2. Charger le modèle
 # ============================================================
-tft = TemporalFusionTransformer.load_from_checkpoint("data/tft_multi.ckpt")
+tft = TemporalFusionTransformer.load_from_checkpoint(args.model)
 tft.eval()
 print("Modèle TFT multi-horizon chargé.")
 

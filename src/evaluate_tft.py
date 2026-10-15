@@ -1,9 +1,15 @@
 """Évaluation du TFT sur le test."""
 
+import argparse
 import pandas as pd
 import numpy as np
 import torch
 from pytorch_forecasting import TimeSeriesDataSet, TemporalFusionTransformer
+
+
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--model", default="data/tft_model.ckpt")
+args = parser.parse_args()
 
 
 def rmse(vrai, predit):
@@ -41,7 +47,7 @@ testing = TimeSeriesDataSet.from_dataset(training, test, predict=False)
 test_dl = testing.to_dataloader(train=False, batch_size=64)
 
 # 4. Charger le modèle
-tft = TemporalFusionTransformer.load_from_checkpoint("data/tft_model.ckpt")
+tft = TemporalFusionTransformer.load_from_checkpoint(args.model)
 tft.eval()
 print("Modèle TFT chargé.")
 

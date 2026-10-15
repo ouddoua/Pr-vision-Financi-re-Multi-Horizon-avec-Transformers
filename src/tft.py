@@ -1,5 +1,8 @@
 """Temporal Fusion Transformer."""
 
+import argparse
+from pathlib import Path
+
 import pandas as pd
 import numpy as np
 import lightning.pytorch as pl
@@ -7,6 +10,11 @@ import torch
 from pytorch_forecasting import TimeSeriesDataSet, TemporalFusionTransformer
 from pytorch_forecasting.data import GroupNormalizer
 from pytorch_forecasting.metrics import QuantileLoss
+
+
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--output", default="data/tft_model.ckpt")
+args = parser.parse_args()
 
 
 # ============================================================
@@ -85,5 +93,7 @@ trainer = pl.Trainer(max_epochs=20, gradient_clip_val=0.1, enable_progress_bar=T
 trainer.fit(tft, train_dataloaders=train_dl, val_dataloaders=val_dl)
 
 # Sauvegarder
-trainer.save_checkpoint("data/tft_model.ckpt")
-print("\nModèle sauvegardé : data/tft_model.ckpt")
+output_path = Path(args.output)
+output_path.parent.mkdir(parents=True, exist_ok=True)
+trainer.save_checkpoint(output_path)
+print(f"\nModèle sauvegardé : {output_path}")

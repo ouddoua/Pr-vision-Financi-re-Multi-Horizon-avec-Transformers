@@ -1,8 +1,14 @@
 """Visualisation de l'attention du TFT."""
 
+import argparse
 import pandas as pd
 import matplotlib.pyplot as plt
 from pytorch_forecasting import TimeSeriesDataSet, TemporalFusionTransformer
+
+
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--model", default="data/tft_model.ckpt")
+args = parser.parse_args()
 
 
 # ============================================================
@@ -33,7 +39,7 @@ test_dl = testing.to_dataloader(train=False, batch_size=64)
 # ============================================================
 # 2. Charger le TFT
 # ============================================================
-tft = TemporalFusionTransformer.load_from_checkpoint("data/tft_model.ckpt")
+tft = TemporalFusionTransformer.load_from_checkpoint(args.model)
 tft.eval()
 print("Modèle TFT chargé.")
 

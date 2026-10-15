@@ -1,4 +1,5 @@
 """Baseline + LSTM multi-horizon sur le test."""
+import argparse
 import pandas as pd
 import numpy as np
 import torch
@@ -6,6 +7,11 @@ import sys
 sys.path.append("src")
 
 from models import load_and_prepare, LSTMModel, L
+
+
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--model", default="data/lstm_model.pt")
+args = parser.parse_args()
 
 
 def rmse(vrai, predit):
@@ -31,7 +37,7 @@ print()
 # Charger le modèle
 # ============================================================
 model = LSTMModel(n_features=X_test.shape[2])
-model.load_state_dict(torch.load("data/lstm_model.pt"))
+model.load_state_dict(torch.load(args.model, map_location="cpu"))
 model.eval()
 
 X_test_t = torch.tensor(X_test, dtype=torch.float32)
@@ -45,12 +51,12 @@ with torch.no_grad():
 # Pour horizon h, on prédit la somme des h derniers log_returns
 # (dans la fenêtre de 60 jours qui précède)
 
-logret = test["log_return"].values
+close = test["Close"].values
 
 # On aligne : la fenêtre commence à l'index L
-baseline_1d  = np.array([logret[i-1] for i in range(L, len(test))])
-baseline_5d  = np.array([logret[i-5:i].sum() for i in range(L, len(test))])
-baseline_20d = np.array([logret[i-20:i].sum() for i in range(L, len(test))])
+baseline_1d  = np.array([np.log(close[i-1] / close[i-2]) for i in range(L, len(test))])
+baseline_5d  = np.array([np.log(close[i-1] / close[i-6]) for i in range(L, len(test))])
+baseline_20d = np.array([np.log(close[i-1] / close[i-21]) for i in range(L, len(test))])
 
 baseline = np.column_stack([baseline_1d, baseline_5d, baseline_20d])
 
